@@ -33,7 +33,7 @@ app.post('/api/cotizaciones', async (req, res) => {
 
         // === INICIO DEL CÓDIGO PARA GOOGLE SHEETS ===
         // ¡PEGA TU URL DE ZAPIER AQUÍ!
-        const ZAPIER_WEBHOOK_URL = 'https://hooks.zapier.com/hooks/catch/15803267/u88sw8c/'; 
+        const ZAPIER_WEBHOOK_URL = 'https://hooks.zapier.com/hooks/catch/15803267/u8z3jl1/'; 
 
         const datosParaSheets = {
             fechaEvento: new Date(nuevaCotizacion.eventDate).toLocaleDateString('es-ES'),
