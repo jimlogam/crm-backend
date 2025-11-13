@@ -26,39 +26,27 @@ mongoose.connect(process.env.MONGO_URI)
 app.post('/api/cotizaciones', async (req, res) => {
     try {
         console.log('>> Nuevo lead recibido:', req.body);
-        
-        // 1. Guardamos el lead en nuestra base de datos
         const nuevaCotizacion = new Cotizacion(req.body);
         await nuevaCotizacion.save();
 
-        // === INICIO DEL CÓDIGO PARA GOOGLE SHEETS VÍA MAKE.COM ===
-        
-        // La dirección de nuestro "cartero digital" en Make.com
         const MAKE_WEBHOOK_URL = 'https://hook.us2.make.com/kffw4wme23rvw75gprq9cv6naums02yv';
         
-        // Preparamos los datos en un formato amigable para la hoja de cálculo
         const datosParaSheets = {
-            fechaEvento: new Date(nuevaCotizacion.eventDate).toLocaleDateString('es-ES'),
+            fechaEvento: new Date(nuevaCotizacion.eventDate).toLocaleDateDateString('es-ES'),
             telefonoCliente: nuevaCotizacion.phone,
             precioTotal: nuevaCotizacion.totalPrice,
             paquete: nuevaCotizacion.packageName || 'M.H.N.Q.N',
             serviciosExtra: nuevaCotizacion.selectedServices.map(s => s.name).join(', '),
-            fechaDeContacto: new Date(nuevaCotizacion.createdAt).toLocaleString('es-ES')
+            fechaDeContacto: new Date(nuevaCotizacion.createdAt).toLocaleString('es-ES') // <-- ¡AQUÍ ESTÁ LA CORRECCIÓN!
         };
 
-        // 2. Enviamos una copia de los datos a Make.com
         await fetch(MAKE_WEBHOOK_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datosParaSheets)
         });
 
-        // ¡MENSAJE CORREGIDO!
         console.log('>> Lead enviado a Make.com para Google Sheets.');
-
-        // === FIN DEL CÓDIGO PARA GOOGLE SHEETS ===
-
-        // Respondemos a la página web que todo salió bien
         res.status(201).json({ message: 'Lead guardado con éxito', data: nuevaCotizacion });
 
     } catch (error) {
@@ -71,4 +59,5 @@ app.post('/api/cotizaciones', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Servidor escuchando en http://localhost:${PORT}`);
 });
+
 
