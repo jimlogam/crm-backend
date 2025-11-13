@@ -1,3 +1,4 @@
+const fetch = require('node-fetch');
 // server.js
 const express = require('express');
 const mongoose = require('mongoose');
@@ -21,15 +22,37 @@ mongoose.connect(process.env.MONGO_URI)
 // --- Rutas de la API ---
 
 // Esta es la ruta que recibirá el "lead" desde tu página web
+// Reemplaza tu app.post actual con esta versión mejorada
 app.post('/api/cotizaciones', async (req, res) => {
     try {
-        console.log('>> Nuevo lead recibido:', req.body); // Vemos en la terminal lo que llega
+        console.log('>> Nuevo lead recibido:', req.body);
         
-        // Creamos una nueva cotización en la base de datos con los datos recibidos
+        // 1. Guardamos en la base de datos (como antes)
         const nuevaCotizacion = new Cotizacion(req.body);
         await nuevaCotizacion.save();
 
-        // Respondemos a la página web que todo salió bien
+        // === INICIO DEL CÓDIGO PARA GOOGLE SHEETS ===
+        // ¡PEGA TU URL DE ZAPIER AQUÍ!
+        const ZAPIER_WEBHOOK_URL = 'https://hooks.zapier.com/hooks/catch/15803267/u88sw8c/'; 
+
+        const datosParaSheets = {
+            fechaEvento: new Date(nuevaCotizacion.eventDate).toLocaleDateString('es-ES'),
+            telefonoCliente: nuevaCotizacion.phone,
+            precioTotal: nuevaCotizacion.totalPrice,
+            paquete: nuevaCotizacion.packageName || 'M.H.N.Q.N',
+            serviciosExtra: nuevaCotizacion.selectedServices.map(s => s.name).join(', '),
+            fechaDeContacto: new Date(nuevaCotizacion.createdAt).toLocaleString('es-ES')
+        };
+
+        // 2. Enviamos una copia a Zapier
+        await fetch(ZAPIER_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datosParaSheets)
+        });
+        console.log('>> Lead enviado a Zapier para Google Sheets.');
+        // === FIN DEL CÓDIGO ===
+
         res.status(201).json({ message: 'Lead guardado con éxito', data: nuevaCotizacion });
 
     } catch (error) {
@@ -37,7 +60,6 @@ app.post('/api/cotizaciones', async (req, res) => {
         res.status(500).json({ message: 'Error interno del servidor' });
     }
 });
-
 // --- Iniciar el Servidor ---
 app.listen(PORT, () => {
     console.log(`🚀 Servidor escuchando en http://localhost:${PORT}`);
