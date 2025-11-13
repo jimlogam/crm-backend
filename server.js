@@ -31,14 +31,14 @@ app.post('/api/cotizaciones', async (req, res) => {
 
         const MAKE_WEBHOOK_URL = 'https://hook.us2.make.com/kffw4wme23rvw75gprq9cv6naums02yv';
         
-        const datosParaSheets = {
-            fechaEvento: new Date(nuevaCotizacion.eventDate).toLocaleDateDateString('es-ES'),
-            telefonoCliente: nuevaCotizacion.phone,
-            precioTotal: nuevaCotizacion.totalPrice,
-            paquete: nuevaCotizacion.packageName || 'M.H.N.Q.N',
-            serviciosExtra: nuevaCotizacion.selectedServices.map(s => s.name).join(', '),
-            fechaDeContacto: new Date(nuevaCotizacion.createdAt).toLocaleString('es-ES') // <-- ¡AQUÍ ESTÁ LA CORRECCIÓN!
-        };
+       const datosParaSheets = {
+    fechaEvento: new Date(nuevaCotizacion.eventDate).toLocaleDateString('es-ES'), // <-- CORREGIDO
+    telefonoCliente: nuevaCotizacion.phone,
+    precioTotal: nuevaCotizacion.totalPrice,
+    paquete: nuevaCotizacion.packageName || 'M.H.N.Q.N',
+    serviciosExtra: nuevaCotizacion.selectedServices.map(s => s.name).join(', '),
+    fechaDeContacto: new Date(nuevaCotizacion.createdAt).toLocaleString('es-ES')
+};
 
         await fetch(MAKE_WEBHOOK_URL, {
             method: 'POST',
@@ -59,5 +59,6 @@ app.post('/api/cotizaciones', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Servidor escuchando en http://localhost:${PORT}`);
 });
+
 
 
