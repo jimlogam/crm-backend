@@ -43,7 +43,7 @@ app.post('/api/cotizaciones', async (req, res) => {
             precioTotal: nuevaCotizacion.totalPrice,
             paquete: nuevaCotizacion.packageName || 'M.H.N.Q.N',
             serviciosExtra: nuevaCotizacion.selectedServices.map(s => s.name).join(', '),
-            fechaDeContacto: new Date(nuevaCotizacion.createdAt).toLocaleString('es--ES')
+            fechaDeContacto: new Date(nuevaCotizacion.createdAt).toLocaleString('es-ES')
         };
 
         // 2. Enviamos una copia de los datos a Make.com
@@ -71,3 +71,4 @@ app.post('/api/cotizaciones', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Servidor escuchando en http://localhost:${PORT}`);
 });
+
