@@ -32,9 +32,9 @@ app.post('/api/cotizaciones', async (req, res) => {
         await nuevaCotizacion.save();
 
         // === INICIO DEL CÓDIGO PARA GOOGLE SHEETS ===
-        // ¡PEGA TU URL DE ZAPIER AQUÍ!
-        const ZAPIER_WEBHOOK_URL = 'https://hooks.zapier.com/hooks/catch/15803267/u8z3jl1/'; 
-
+       // ¡PEGA TU NUEVA URL DE MAKE AQUÍ!
+const MAKE_WEBHOOK_URL = 'https://hook.us2.make.com/kffw4wme23rvw75gprq9cv6naums02yv';
+        
         const datosParaSheets = {
             fechaEvento: new Date(nuevaCotizacion.eventDate).toLocaleDateString('es-ES'),
             telefonoCliente: nuevaCotizacion.phone,
@@ -45,7 +45,7 @@ app.post('/api/cotizaciones', async (req, res) => {
         };
 
         // 2. Enviamos una copia a Zapier
-        await fetch(ZAPIER_WEBHOOK_URL, {
+        await fetch(MAKE_WEBHOOK_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datosParaSheets)
@@ -65,3 +65,4 @@ app.listen(PORT, () => {
     console.log(`🚀 Servidor escuchando en http://localhost:${PORT}`);
 
 });
+
